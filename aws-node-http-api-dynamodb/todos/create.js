@@ -3,9 +3,11 @@
 const uuid = require('uuid');
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new AWS.DynamoDB.DocumentClient({endpoint: `https://${process.env.LOCALSTACK_HOSTNAME}:4566`});
 
 module.exports.create = (event, context, callback) => {
+  // console.log(event);
+  console.log('event path', {path: event.path});
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
   if (typeof data.text !== 'string') {
@@ -45,7 +47,7 @@ module.exports.create = (event, context, callback) => {
     // create a response
     const response = {
       statusCode: 200,
-      body: JSON.stringify(params.Item),
+      body: JSON.stringify(event),
     };
     callback(null, response);
   });
